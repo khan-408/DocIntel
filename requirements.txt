@@ -1,0 +1,17 @@
+langchain
+openai
+faiss-cpu
+sentence-transformers
+pdfminer.six
+python-docx
+pytesseract
+Pillow
+opencv-python
+bertopic
+hdbscan
+umap-learn
+streamlit
+fastapi
+uvicorn
+numpy 
+pandas
