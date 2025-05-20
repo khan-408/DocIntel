@@ -28,10 +28,17 @@ async def upload(request: Request, file: UploadFile=File(...)):
     return templates.TemplateResponse("chat.html", {"request": request, "message": "Upload successful!"})
 
 
+CHAT_HISTORY = []
 @router.post("/ask")
 async def ask_query(request: Request, query: str = Form(...)):
-    answer = ask_documents(query)
-    return templates.TemplateResponse("chat.html", {"request": request, "answer": answer})
+    answer, sources = ask_documents(query)    
+    CHAT_HISTORY.append({"Question":query, "Answer": answer, "Sources": sources})
+    return templates.TemplateResponse("chat.html", {
+        "request": request,
+        "answer": answer,
+        "chat_history": CHAT_HISTORY,
+        "sources": sources,
+        })
 
 
 # @router.get("/ask")
