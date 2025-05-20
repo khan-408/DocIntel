@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+langchain
+langchain-community
+sentence-transformers
+faiss-cpu
+pytesseract
+pdfplumber
+python-docs
+PyMupdf
+python-multipart
+aiofiles
+Pillow
+groq

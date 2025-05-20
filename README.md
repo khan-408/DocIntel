@@ -38,3 +38,24 @@ pip install -r requirements.txt
 ```sh
 python backend/app/main.py
 ```
+
+
+## This is going to be our folder structure
+```
+DocIntel/
+├── backend/
+│   ├── app/
+│   │   ├── api/           # API route definitions
+│   │   ├── core/          # Configuration, startup logic
+│   │   ├── models/        # Pydantic models and DB schemas
+│   │   ├── services/      # Business logic (LangChain, OCR, PDF processing)
+│   │   ├── main.py        # FastAPI app entry point
+│   │   └── config.py      # Environment and app settings
+│   ├── data/              # Sample or processed data
+│   ├── Dockerfile         # For containerization (optional now)
+│   └── requirements.txt   # Python dependencies
+├── docs/                  # Documentation, paper references
+├── tests/                 # Unit and integration tests
+├── demo/                  # Screenshots, demo video, assets
+└── README.md
+```
