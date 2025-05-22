@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 from fastapi.templating import Jinja2Templates
 
-app = FastAPI(title= "Free LLm Document Research Chatbot")
+app = FastAPI(title= "Free LLm Document Research Chatbot", debug=True)
 
 app.include_router(api_router)
 

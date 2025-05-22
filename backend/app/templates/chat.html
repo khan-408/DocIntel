@@ -55,11 +55,23 @@
     <h3 class="text-center mb-4">LLM-Powered Document Chatbot</h3>
 
     <div class="chat-box" id="chat-box">
-        {% if message %}
-            <div class="chat-bubble bot">{{ message }}</div>
-        {% endif %}
-        {% if answer %}
-            <div class="chat-bubble bot">{{ answer }}</div>
+        {% if chat_history %}
+            {% for chat in chat_history %}
+                <div class="chat-bubble user"><strong>You:</strong> {{ chat.Question }}</div>
+                <div class="chat-bubble bot"><strong>Bot:</strong> {{ chat.Answer }}</div>
+                {% if chat.Sources %}
+                    <div class="chat-bubble bot">
+                        <strong>Sources:</strong>
+                        <ul>
+                        {% for src in chat.Sources %}
+                            <li>{{ src }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="text-muted">Ask a question to start the conversation.</div>
         {% endif %}
     </div>
 
