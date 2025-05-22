@@ -62,25 +62,84 @@ stored_chunks = []  # clear or declare globally
 #         chunks.extend(text_chunks)
 
 #     stored_chunks = chunks  # store Document objects
+# def build_vector_index(documents):
+#     global stored_chunks, faiss_index, model
+
+#     chunks = []
+#     # for i, doc_text in enumerate(documents):
+#     #     filename = f"Document_{i+1}"  # Generate a fallback filename
+#     #     if isinstance(doc_text, list):  # Just in case some text is in list format
+#     #         doc_text = " ".join(doc_text)
+#     for i, doc in enumerate(documents):
+#         # Check if doc is a dict with 'text' and optional 'filename'
+#         if isinstance(doc, dict):
+#             doc_text = doc.get("text", "")
+#             filename = doc.get("filename", f"Document_{i+1}")
+#         else:
+#             doc_text = doc
+#             filename = f"Document_{i+1}"
+
+#         if isinstance(doc_text, list):  # If it's a list of strings, join
+#             doc_text = " ".join(doc_text)
+#         text_chunks = split_into_chunks(doc_text, source=filename)
+#         chunks.extend(text_chunks)
+
+#     stored_chunks = chunks
+#     embeddings = model.encode([doc.page_content for doc in stored_chunks])
+#     faiss_index = faiss.IndexFlatL2(len(embeddings[0]))
+#     faiss_index.add(np.array(embeddings))
+
+
+#     # Create embeddings
+#     embeddings = model.encode([doc.page_content for doc in stored_chunks])
+#     faiss_index = faiss.IndexFlatL2(len(embeddings[0]))
+#     faiss_index.add(np.array(embeddings))
+
 def build_vector_index(documents):
     global stored_chunks, faiss_index, model
 
     chunks = []
-    for i, doc_text in enumerate(documents):
-        filename = f"Document_{i+1}"  # Generate a fallback filename
+
+    for i, doc in enumerate(documents):
+        # Handle pure string document
+        if isinstance(doc, str):
+            filename = f"Document_{i+1}"
+            doc_text = doc
+
+        # Handle dict-style document
+        elif isinstance(doc, dict):
+            filename = doc.get("filename", f"Document_{i+1}")
+            doc_text = doc.get("text", "")
+
+            # If 'text' is a list, join all strings or extract 'content'
+            if isinstance(doc_text, list):
+                if all(isinstance(item, str) for item in doc_text):
+                    doc_text = " ".join(doc_text)
+                elif all(isinstance(item, dict) for item in doc_text):
+                    doc_text = " ".join(item.get("content", "") for item in doc_text)
+                else:
+                    doc_text = str(doc_text)
+
+        # Handle doc is already a list (edge case)
+        elif isinstance(doc, list):
+            filename = f"Document_{i+1}"
+            doc_text = " ".join(str(item) for item in doc)
+
+        else:
+            continue  # Skip if format is unknown
+
+        # Now split and store
         text_chunks = split_into_chunks(doc_text, source=filename)
         chunks.extend(text_chunks)
 
+    # Save for retrieval
     stored_chunks = chunks
+
+    # Embed and index
     embeddings = model.encode([doc.page_content for doc in stored_chunks])
     faiss_index = faiss.IndexFlatL2(len(embeddings[0]))
     faiss_index.add(np.array(embeddings))
 
-
-    # Create embeddings
-    embeddings = model.encode([doc.page_content for doc in stored_chunks])
-    faiss_index = faiss.IndexFlatL2(len(embeddings[0]))
-    faiss_index.add(np.array(embeddings))
 
 
 # def search_index(query, k=3):

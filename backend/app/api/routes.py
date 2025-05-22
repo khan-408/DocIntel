@@ -5,7 +5,7 @@ from app.services.document_processor import process_file
 from app.services.qa_engine import ask_documents
 from app.services.embedder import build_vector_index
 from fastapi.responses import JSONResponse
-
+from typing import List
 
 router= APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -21,13 +21,21 @@ async def upload_form(request: Request):
 
 @router.post("/upload")
 
-async def upload(request: Request, file: UploadFile=File(...)):
-    context = await file.read()
-    text = process_file(file.filename, context)
+async def upload(request: Request, files: List[UploadFile] = File(...)):
+    documents = []
+
+    for file in files:
+        context = await file.read()
+        text = process_file(file.filename, context)
+        documents.append({
+            "text": text,
+            "filename": file.filename
+        })
+
     DOCUMENT_STORE.clear()
-    DOCUMENT_STORE.append(text)
+    DOCUMENT_STORE.append(documents)
     build_vector_index(DOCUMENT_STORE)
-    return templates.TemplateResponse("chat.html", {"request": request, "message": "Upload successful!"})
+    return templates.TemplateResponse("chat.html", {"request": request, "message": f"Uploaded {len(DOCUMENT_STORE)} files successfully."})
 
 
 CHAT_HISTORY = []
